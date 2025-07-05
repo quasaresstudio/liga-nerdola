@@ -16,6 +16,17 @@ class _LoginPageState extends State<LoginPage> {
 
   final _formKey = GlobalKey<FormState>();
   String? errorMessage;
+  double _opacity = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      if (mounted) {
+        setState(() => _opacity = 1);
+      }
+    });
+  }
 
   void _login() async {
     if (_formKey.currentState!.validate()) {
@@ -23,7 +34,11 @@ class _LoginPageState extends State<LoginPage> {
         await AuthService().login(emailController.text, senhaController.text);
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
+          PageRouteBuilder(
+            pageBuilder: (_, animation, __) => const HomePage(),
+            transitionsBuilder: (_, animation, __, child) =>
+                FadeTransition(opacity: animation, child: child),
+          ),
         );
       } on FirebaseAuthException catch (e) {
         setState(() {
@@ -35,17 +50,20 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF0F1013),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Container(
-            padding: const EdgeInsets.all(32),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1C1E22),
-              borderRadius: BorderRadius.circular(12),
-            ),
+    return AnimatedOpacity(
+      opacity: _opacity,
+      duration: const Duration(milliseconds: 500),
+      child: Scaffold(
+        backgroundColor: const Color(0xFF0F1013),
+        body: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Container(
+              padding: const EdgeInsets.all(32),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1C1E22),
+                borderRadius: BorderRadius.circular(12),
+              ),
             width: 400,
             child: Form(
               key: _formKey,

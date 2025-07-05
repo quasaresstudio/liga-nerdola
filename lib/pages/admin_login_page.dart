@@ -17,6 +17,15 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
   final _formKey = GlobalKey<FormState>();
   String? errorMessage;
   final adminAuthService = AdminAuthService();
+  double _opacity = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      if (mounted) setState(() => _opacity = 1);
+    });
+  }
 
   void _login() async {
     if (_formKey.currentState!.validate()) {
@@ -28,7 +37,11 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
         if (!mounted) return;
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const AdminDashboard()),
+          PageRouteBuilder(
+            pageBuilder: (_, animation, __) => const AdminDashboard(),
+            transitionsBuilder: (_, animation, __, child) =>
+                FadeTransition(opacity: animation, child: child),
+          ),
         );
       } on FirebaseAuthException catch (e) {
         setState(() {
@@ -40,9 +53,12 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF0F1013),
-      body: Center(
+    return AnimatedOpacity(
+      opacity: _opacity,
+      duration: const Duration(milliseconds: 500),
+      child: Scaffold(
+        backgroundColor: const Color(0xFF0F1013),
+        body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Container(
