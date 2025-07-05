@@ -24,7 +24,11 @@ class _RegisterPageState extends State<RegisterPage> {
         );
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const HomePage()),
+          PageRouteBuilder(
+            pageBuilder: (_, animation, __) => const HomePage(),
+            transitionsBuilder: (_, animation, __, child) =>
+                FadeTransition(opacity: animation, child: child),
+          ),
         );
       } on FirebaseAuthException catch (e) {
         setState(() {

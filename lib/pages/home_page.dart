@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../models/video_model.dart';
 import '../services/video_service.dart';
 import 'video_player_page.dart';
+import '../widgets/favorite_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -207,21 +208,33 @@ class _HomePageState extends State<HomePage> {
                         itemCount: _videosFiltrados.length,
                         itemBuilder: (context, index) {
                           final video = _videosFiltrados[index];
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => VideoPlayerPage(video: video),
+                          return TweenAnimationBuilder<double>(
+                            tween: Tween(begin: 0.0, end: 1.0),
+                            duration: const Duration(milliseconds: 500),
+                            builder: (context, value, child) =>
+                                Opacity(opacity: value, child: child),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    pageBuilder: (_, animation, __) =>
+                                        VideoPlayerPage(video: video),
+                                    transitionsBuilder:
+                                        (_, animation, __, child) =>
+                                            FadeTransition(
+                                      opacity: animation,
+                                      child: child,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF1E1E1E),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                              );
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF1E1E1E),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Column(
+                                child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -229,10 +242,19 @@ class _HomePageState extends State<HomePage> {
                                     borderRadius: const BorderRadius.vertical(
                                       top: Radius.circular(10),
                                     ),
-                                    child: Image.network(
-                                      video.thumbnailUrl,
-                                      width: double.infinity,
-                                      fit: BoxFit.fitWidth,
+                                    child: Stack(
+                                      children: [
+                                        Image.network(
+                                          video.thumbnailUrl,
+                                          width: double.infinity,
+                                          fit: BoxFit.fitWidth,
+                                        ),
+                                        const Positioned(
+                                          top: 4,
+                                          right: 4,
+                                          child: FavoriteButton(),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                   Padding(

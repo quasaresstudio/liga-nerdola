@@ -59,7 +59,11 @@ class LandingPage extends StatelessWidget {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const LoginPage()),
+                          PageRouteBuilder(
+                            pageBuilder: (_, animation, __) => const LoginPage(),
+                            transitionsBuilder: (_, animation, __, child) =>
+                                FadeTransition(opacity: animation, child: child),
+                          ),
                         );
                       },
                       child: const Text(
@@ -113,7 +117,11 @@ class LandingPage extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const AdminLoginPage()),
+                  PageRouteBuilder(
+                    pageBuilder: (_, animation, __) => const AdminLoginPage(),
+                    transitionsBuilder: (_, animation, __, child) =>
+                        FadeTransition(opacity: animation, child: child),
+                  ),
                 );
               },
             ),
